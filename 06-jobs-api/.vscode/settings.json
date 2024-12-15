@@ -1,0 +1,17 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "starter/node_modules": true,
+        "starter/package-lock.json": true,
+        "**/node_modules": true
+    },
+    "hide-files.files": [
+        "starter/node_modules",
+        "starter/package-lock.json"
+    ]
+}
