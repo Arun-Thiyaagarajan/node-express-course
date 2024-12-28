@@ -21,6 +21,16 @@ const JobSchema = pkg.Schema({
         ref: 'User',
         required: [true, 'Please provide user'],
     },
+    jobType: {
+        type: String,
+        enum: ['full-time', 'part-time', 'remote', 'internship'],
+        default: 'full-time',
+    },
+    jobLocation: {
+        type: String,
+        default: 'India',
+        required: true,
+    },
 }, {timestamps: true}
 );
 
