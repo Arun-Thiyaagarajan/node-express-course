@@ -1,6 +1,6 @@
 import 'express-async-errors';
 import { config } from 'dotenv';
-import express, { json } from 'express';
+import express, { json, static as static_ } from 'express';
 const app = express();
 config();
 // database
@@ -9,8 +9,19 @@ import productRouter from './routes/productRoutes.js';
 // error handler
 import notFoundMiddleware from './middleware/not-found.js';
 import errorHandlerMiddleware from './middleware/error-handler.js';
+import fileUpload from 'express-fileupload';
+import { v2 } from 'cloudinary';
 
+app.use(static_('./public'));
 app.use(json());
+app.use(fileUpload({ useTempFiles: true }));
+
+v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
+
 app.get('/', (req, res) => {
   res.send('<h1>File Upload Starter</h1>');
 });
