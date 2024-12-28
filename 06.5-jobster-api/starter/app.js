@@ -23,6 +23,8 @@ const __dirname = dirname(__filename);
 const app = express();
 config();
 
+app.set('trust proxy', 1);
+
 app.use(static_(resolve(__dirname, './client/build')));
 app.use(json());
 app.use(helmet());
