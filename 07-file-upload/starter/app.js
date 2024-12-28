@@ -1,15 +1,14 @@
-require('dotenv').config();
-require('express-async-errors');
-
-const express = require('express');
+import 'express-async-errors';
+import { config } from 'dotenv';
+import express from 'express';
 const app = express();
-
+config();
 // database
-const connectDB = require('./db/connect');
+import connectDB from './db/connect.js';
 
 // error handler
-const notFoundMiddleware = require('./middleware/not-found');
-const errorHandlerMiddleware = require('./middleware/error-handler');
+import notFoundMiddleware from './middleware/not-found.js';
+import errorHandlerMiddleware from './middleware/error-handler.js';
 
 app.get('/', (req, res) => {
   res.send('<h1>File Upload Starter</h1>');
@@ -26,7 +25,7 @@ const start = async () => {
     await connectDB(process.env.MONGO_URI);
 
     app.listen(port, () =>
-      console.log(`Server is listening on port ${port}...`)
+      console.log(`Server is listening on port http://localhost:${port}`)
     );
   } catch (error) {
     console.log(error);
