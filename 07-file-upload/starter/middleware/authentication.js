@@ -1,4 +1,3 @@
-import User from '../models/User.js'
 import { verify } from 'jsonwebtoken'
 import { UnauthenticatedError } from '../errors/index.js'
 
