@@ -4,6 +4,7 @@ import { connectDB } from "./db/connect.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 import notFoundMiddleware from "./middleware/not-found.js";
 import 'express-async-errors';
+import morgan from "morgan";
 
 // .env Configuration
 config();
@@ -11,6 +12,7 @@ config();
 const app = express();
 
 // Other Middleware
+app.use(morgan('tiny'));
 app.use(json());
 
 // Routes
