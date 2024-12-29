@@ -4,4 +4,6 @@ const connectDB = (url) => {
   return connect(url);
 };
 
-export default connectDB;
+export {
+  connectDB
+};
