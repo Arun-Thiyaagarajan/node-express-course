@@ -1,6 +1,9 @@
 import express, { json } from "express";
 import { config } from "dotenv";
 import { connectDB } from "./db/connect.js";
+import errorHandlerMiddleware from "./middleware/error-handler.js";
+import notFoundMiddleware from "./middleware/not-found.js";
+import 'express-async-errors';
 
 // .env Configuration
 config();
@@ -9,6 +12,13 @@ const app = express();
 
 // Middleware
 app.use(json());
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
+
+// Routes
+app.get('/', (req, res) => {
+    res.send('E-Commerce API');
+});
 
 const port = process.env.PORT || 5001;
 
