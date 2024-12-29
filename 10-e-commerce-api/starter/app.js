@@ -10,15 +10,18 @@ config();
 // express.js Configuration
 const app = express();
 
-// Middleware
+// Other Middleware
 app.use(json());
-app.use(notFoundMiddleware);
-app.use(errorHandlerMiddleware);
 
 // Routes
 app.get('/', (req, res) => {
     res.send('E-Commerce API');
 });
+
+
+// Error Handling Middleware
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 5001;
 
