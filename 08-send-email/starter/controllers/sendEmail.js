@@ -27,7 +27,7 @@ const sendEmail = async (req, res) => {
     
     const msg = {
         to: 'testerarun.dev@gmail.com', // Change to your recipient
-        from: 'arunthiyaagarajan.ta@gmail.com', // Change to your verified sender
+        from: 'hello@gmail.com', // Change to your verified sender
         subject: 'Sending with SendGrid is Fun',
         text: 'and easy to do anywhere, even with Node.js',
         html: '<strong>and easy to do anywhere, even with Node.js</strong>',
