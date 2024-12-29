@@ -1,4 +1,4 @@
-import 'dotenv';
+import { config } from 'dotenv';
 import 'express-async-errors';
 
 import express, { json, static as static_ } from 'express';
@@ -7,8 +7,8 @@ config();
 // controller
 
 // error handler
-import notFoundMiddleware from './middleware/not-found';
-import errorHandlerMiddleware from './middleware/error-handler';
+import notFoundMiddleware from './middleware/not-found.js';
+import errorHandlerMiddleware from './middleware/error-handler.js';
 
 app.use(json());
 app.use(static_('./public'));
