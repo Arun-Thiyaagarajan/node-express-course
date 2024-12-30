@@ -6,6 +6,7 @@ import notFoundMiddleware from "./middleware/not-found.js";
 import 'express-async-errors';
 import morgan from "morgan";
 import authRouter from './routes/authRoutes.js';
+import userRouter from './routes/userRoutes.js';
 import cookieParser from "cookie-parser";
 
 // .env Configuration
@@ -20,6 +21,7 @@ app.use(json());
 
 // Routes
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', userRouter);
 
 app.get('/', (req, res) => {
     res.send('E-Commerce API');
