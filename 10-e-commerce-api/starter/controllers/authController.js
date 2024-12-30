@@ -17,14 +17,24 @@ const register = async (req, res) => {
 
     const user = await User.create({ ...req.body, role: role });
     const tokenUser = { name: user.name, userId: user._id, role: user.role };
-    const token = createJWT({ payload: tokenUser });
     attachCookiesToResponse({res, user: tokenUser});
 
     res.status(StatusCodes.CREATED).json({ user: tokenUser });
 }
 
 const login = async (req, res) => {
-    res.send('login user');
+    const { email, password } = req.body;
+    if (!email || !password) {
+        throw new BadRequestError('Please provide the required fields');
+    }
+    const user = await User.findOne({ email });
+    if (!user ||!(await user.comparePassword(password))) {
+        throw new UnauthenticatedError('Invalid credentials');
+    }
+    const tokenUser = { name: user.name, userId: user._id, role: user.role };
+    attachCookiesToResponse({res, user: tokenUser});
+
+    res.status(StatusCodes.OK).json({ user: tokenUser });
 }
 
 const logout = async (req, res) => {
