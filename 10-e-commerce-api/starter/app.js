@@ -5,6 +5,7 @@ import errorHandlerMiddleware from "./middleware/error-handler.js";
 import notFoundMiddleware from "./middleware/not-found.js";
 import 'express-async-errors';
 import morgan from "morgan";
+import authRouter from './routes/authRoutes.js';
 
 // .env Configuration
 config();
@@ -16,9 +17,12 @@ app.use(morgan('tiny'));
 app.use(json());
 
 // Routes
+app.use('/api/v1/auth', authRouter);
+
 app.get('/', (req, res) => {
     res.send('E-Commerce API');
 });
+
 
 
 // Error Handling Middleware
