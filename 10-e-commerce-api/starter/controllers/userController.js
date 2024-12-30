@@ -1,11 +1,19 @@
+import { StatusCodes } from "http-status-codes";
+import User from "../models/User.js";
+import NotFoundError from "../errors/not-found.js";
 
 
 const getAllUsers = async (req, res) => {
-    res.send('get all users');
+    const allUsers = await User.find({ role: 'user' }).select('-password');
+    res.status(StatusCodes.OK).json({ allUsers });
 }
 
 const getSingleUser = async (req, res) => {
-    res.send('get single user');
+    const user = await User.findOne({ _id: req.params.id }).select('-password');
+    if (!user) {
+        throw new NotFoundError('User not found');
+    }
+    res.status(StatusCodes.OK).json({ user });
 }
 
 const showCurrentUser = async (req, res) => {
