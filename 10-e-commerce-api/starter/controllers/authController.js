@@ -17,7 +17,7 @@ const register = async (req, res) => {
 
     const user = await User.create({ ...req.body, role: role });
     const tokenUser = { name: user.name, userId: user._id, role: user.role };
-    const token = createJWT({payload: tokenUser});
+    const token = createJWT({ payload: tokenUser });
 
     res.status(StatusCodes.CREATED).json({ user: tokenUser, token });
 }
