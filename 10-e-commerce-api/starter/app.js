@@ -6,6 +6,7 @@ import notFoundMiddleware from "./middleware/not-found.js";
 import 'express-async-errors';
 import morgan from "morgan";
 import authRouter from './routes/authRoutes.js';
+import cookieParser from "cookie-parser";
 
 // .env Configuration
 config();
@@ -14,6 +15,7 @@ const app = express();
 
 // Other Middleware
 app.use(morgan('tiny'));
+app.use(cookieParser(process.env.JWT_SECRET));
 app.use(json());
 
 // Routes
