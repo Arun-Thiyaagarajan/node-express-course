@@ -1,6 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import User from "../models/User.js";
-import { NotFoundError } from "../errors/index.js";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
+import { createTokenUser } from "../utils/createTokenUser.js";
+import { attachCookiesToResponse } from "../utils/jwt.js";
 
 
 const getAllUsers = async (req, res) => {
@@ -21,7 +23,20 @@ const showCurrentUser = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-    res.send('update user');
+    const { name, email } = req.body;
+
+    if (!name || !email) {
+        throw new BadRequestError('Provide the required fields');
+    }
+    const user = await User.findOneAndUpdate(
+        { _id: req.user.userId },
+        { name, email },
+        { new: true, runValidators: true, }
+    );
+    const tokenUser = createTokenUser(user);
+    attachCookiesToResponse({ res, user: tokenUser });
+
+    res.status(StatusCodes.OK).json({ user: tokenUser });
 }
 
 const updateUserPassword = async (req, res) => {
