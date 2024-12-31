@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import User from "../models/User.js";
-import NotFoundError from "../errors/not-found.js";
+import { NotFoundError } from "../errors/index.js";
 
 
 const getAllUsers = async (req, res) => {
