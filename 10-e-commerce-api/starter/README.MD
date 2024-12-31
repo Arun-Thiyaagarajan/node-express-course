@@ -146,7 +146,7 @@
 #### createTokenUser in Utils
 
 - [x] create a file in utils (createTokenUser)
-- [] setup a function that accepts user object and returns userToken object
+- [x] setup a function that accepts user object and returns userToken object
 - [x] export as default
 - [x] setup all the correct imports/exports and refactor existing code
 
