@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import User from "../models/User.js";
 import { BadRequestError, UnauthenticatedError } from '../errors/index.js';
 import { attachCookiesToResponse, createJWT } from "../utils/jwt.js";
+import { createTokenUser } from "../utils/createTokenUser.js";
 
 const register = async (req, res) => {
     const { email } = req.body;
@@ -16,7 +17,7 @@ const register = async (req, res) => {
     const role = isFirstAccount ? 'admin' : 'user';
 
     const user = await User.create({ ...req.body, role: role });
-    const tokenUser = { name: user.name, userId: user._id, role: user.role };
+    const tokenUser = createTokenUser(user);
     attachCookiesToResponse({res, user: tokenUser});
 
     res.status(StatusCodes.CREATED).json({ user: tokenUser });
@@ -31,7 +32,7 @@ const login = async (req, res) => {
     if (!user ||!(await user.comparePassword(password))) {
         throw new UnauthenticatedError('Invalid credentials');
     }
-    const tokenUser = { name: user.name, userId: user._id, role: user.role };
+    const tokenUser = createTokenUser(user);
     attachCookiesToResponse({res, user: tokenUser});
 
     res.status(StatusCodes.OK).json({ user: tokenUser });
