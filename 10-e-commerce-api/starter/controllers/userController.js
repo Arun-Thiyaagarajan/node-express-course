@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { createTokenUser } from "../utils/createTokenUser.js";
 import { attachCookiesToResponse } from "../utils/jwt.js";
+import { checkPermissions } from "../utils/checkPermissions.js";
 
 
 const getAllUsers = async (req, res) => {
@@ -15,6 +16,7 @@ const getSingleUser = async (req, res) => {
     if (!user) {
         throw new NotFoundError('User not found');
     }
+    checkPermissions(req.user, user._id);
     res.status(StatusCodes.OK).json({ user });
 }
 
