@@ -191,7 +191,7 @@
 - [x] import all controllers
 - [x] only getAllProducts and getSingleProduct accessible to public
 - [x] rest only by admin (setup middlewares)
-- [] typical setup
+- [x] typical setup
 - [x] router.route('/uploadImage').post(uploadImage)
 - [x] import productRoutes as productRouter in the app.js
 - [x] setup app.use('/api/v1/products', productRouter)
