@@ -1,4 +1,4 @@
-const { Schema, model, Types } = require("mongoose");
+import { Schema, model } from "mongoose";
 
 
 const ReviewSchema = Schema({
