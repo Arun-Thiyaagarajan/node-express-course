@@ -1,8 +1,12 @@
 import { StatusCodes } from "http-status-codes";
 import Product from "../models/Product.js";
-import { NotFoundError } from "../errors/index.js";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
-
+// Setup __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const createProduct = async (req, res) => {
     req.body.user = req.user.userId;
@@ -48,7 +52,23 @@ const deleteProduct = async (req, res) => {
 }
 
 const uploadImage = async (req, res) => {
-    res.send('uploadImage');
+    if (!req.files) {
+        throw new BadRequestError('No files to upload');
+    }
+    
+    const productImage = req.files.image;
+    if (!productImage.mimetype.startsWith('image/')) { 
+        throw new BadRequestError('Invalid file type. Only images are allowed.');
+    }
+    const maxSize = 1024 * 1024;
+    if (productImage.size > maxSize) {
+        throw new BadRequestError('Image size is too large. Max size is 1MB.');
+    }
+
+    const imagePath = join(__dirname, '../public/uploads/' + `${productImage.name}`);
+    await productImage.mv(imagePath);
+
+    res.status(StatusCodes.OK).json({ image: `/uploads/${productImage.name}` });
 }
 
 export {

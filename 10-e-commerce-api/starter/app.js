@@ -1,4 +1,4 @@
-import express, { json } from "express";
+import express, { json, static as static_ } from "express";
 import { config } from "dotenv";
 import { connectDB } from "./db/connect.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
@@ -9,6 +9,7 @@ import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import productRouter from './routes/productRoutes.js';
 import cookieParser from "cookie-parser";
+import fileUpload from "express-fileupload";
 
 // .env Configuration
 config();
@@ -19,6 +20,9 @@ const app = express();
 app.use(morgan('tiny'));
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(json());
+
+app.use(static_('./public'))
+app.use(fileUpload());
 
 // Routes
 app.use('/api/v1/auth', authRouter);
