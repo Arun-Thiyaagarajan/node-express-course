@@ -62,6 +62,6 @@ const ProductSchema = Schema({
         ref: 'User',
         required: true,
     }
-}, { timeStamps: true });
+}, { timestamps: true });
 
 export default model('Product', ProductSchema);

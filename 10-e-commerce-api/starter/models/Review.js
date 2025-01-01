@@ -30,7 +30,7 @@ const ReviewSchema = Schema({
         ref: 'Product',
         required: true,
     },
-}, { timeStamps: true });
+}, { timestamps: true });
 
 // Only One Product Review per User
 ReviewSchema.index(
