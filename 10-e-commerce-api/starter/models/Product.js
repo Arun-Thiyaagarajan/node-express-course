@@ -37,6 +37,7 @@ const ProductSchema = Schema({
     },
     colors: {
         type: [String],
+        default: ['#eeeeee'],
         required: [true, 'Please provide at least one color'],
     },
     featured: {
