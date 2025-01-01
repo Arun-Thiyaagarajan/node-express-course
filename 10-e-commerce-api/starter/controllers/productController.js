@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import Product from "../models/Product.js";
+import { NotFoundError } from "../errors/index.js";
 
 
 
@@ -10,19 +11,40 @@ const createProduct = async (req, res) => {
 }
 
 const getAllProducts = async (req, res) => {
-    res.send('getAllProducts');
+    const products = await Product.find({});
+    res.status(StatusCodes.OK).json({ products, totalCount: products.length });
 }
 
 const getSingleProduct = async (req, res) => {
-    res.send('getSingleProduct');
+    const { id: productId } = req.params;
+    const product = await Product.findOne({ _id: productId });
+    if (!product) {
+        throw new NotFoundError('Product not found');
+    }
+    res.status(StatusCodes.OK).json({ product });
 }
 
 const updateProduct = async (req, res) => {
-    res.send('updateProduct');
+    const { id: productId } = req.params;
+    const product = await Product.findOneAndUpdate(
+        { _id: productId },
+        req.body,
+        { new: true, runValidators: true, }
+    );
+    if (!product) {
+        throw new NotFoundError('Product not found');
+    }
+    res.status(StatusCodes.OK).json({ product });
 }
 
 const deleteProduct = async (req, res) => {
-    res.send('deleteProduct');
+    const { id: productId } = req.params;
+    const product = await Product.findOne({ _id: productId });
+    if (!product) {
+        throw new NotFoundError('Product not found');
+    }
+    await product.deleteOne();
+    res.status(StatusCodes.OK).json({ msg: 'Product Deleted Successfully!' });
 }
 
 const uploadImage = async (req, res) => {
