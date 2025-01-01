@@ -10,6 +10,7 @@ import userRouter from './routes/userRoutes.js';
 import productRouter from './routes/productRoutes.js';
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
+import reviewRouter from './routes/reviewRoutes.js';
 
 // .env Configuration
 config();
@@ -28,6 +29,7 @@ app.use(fileUpload());
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/products', productRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.get('/', (req, res) => {
     res.send('E-Commerce API');
