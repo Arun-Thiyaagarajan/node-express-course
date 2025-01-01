@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import Review from "../models/Review.js";
 import { BadRequestError } from "../errors/index.js";
 import Product from "../models/Product.js";
+import { checkPermissions } from "../utils/checkPermissions.js";
 
 
 const createReview = async (req, res) => {
@@ -28,13 +29,13 @@ const createReview = async (req, res) => {
 
 const getAllReviews = async (req, res) => {
     const reviews = await Review.find({});
-    res.status(StatusCodes.OK).json({ reviews, totalCount: reviews.length }); 
+    res.status(StatusCodes.OK).json({ reviews, totalCount: reviews.length });
 }
 
 const getSingleReview = async (req, res) => {
     const { id: reviewId } = req.params;
 
-    const review = await Review.findOne({_id: reviewId});
+    const review = await Review.findOne({ _id: reviewId });
     if (!review) {
         throw new NotFoundError('Review not found');
     }
@@ -47,7 +48,17 @@ const updateReview = async (req, res) => {
 }
 
 const deleteReview = async (req, res) => {
-    res.send('deleteReview');
+    const { id: reviewId } = req.params;
+
+    const review = await Review.findOne({ _id: reviewId });
+    if (!review) {
+        throw new NotFoundError('Review not found');
+    }
+
+    checkPermissions(req.user, review.user);
+    await review.deleteOne();
+
+    res.status(StatusCodes.OK).json({ msg: 'Review Deleted' });
 }
 
 export {
