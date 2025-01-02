@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import Review from "../models/Review.js";
-import { BadRequestError } from "../errors/index.js";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
 import Product from "../models/Product.js";
 import { checkPermissions } from "../utils/checkPermissions.js";
 
