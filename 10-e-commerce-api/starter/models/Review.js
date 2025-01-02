@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { BadRequestError } from "../errors/index.js";
 
 
 const ReviewSchema = Schema({
@@ -39,7 +40,28 @@ ReviewSchema.index(
 );
 
 ReviewSchema.statics.calculateAverageRating = async function (productId) {
-    console.log(productId);
+    const result = await this.aggregate([
+        { $match: { product: productId } },
+        {
+            $group: {
+                _id: null,
+                averageRating: { $avg: '$rating' },
+                numOfReviews: { $sum: 1 },
+            }
+        }
+    ]);
+
+    try {
+        await this.model('Product').findOneAndUpdate(
+            { _id: productId },
+            {
+                averageRating: Math.ceil(result[0]?.averageRating) || 0,
+                numOfReviews: result[0]?.numOfReviews || 0,
+            }
+        );
+    } catch (error) {
+        throw new BadRequestError('Something went wrong');
+    }
 }
 
 ReviewSchema.post('save', async function () {
@@ -54,7 +76,8 @@ ReviewSchema.post('save', async function () {
  * NOTE: You only need these options in middlewares for operations like deleteOne or updateOne
  */
 ReviewSchema.post('deleteOne', { document: true, query: false }, async function () {
-    await this.constructor.calculateAverageRating(this.product);});
+    await this.constructor.calculateAverageRating(this.product);
+});
 
 export default model('Review', ReviewSchema);
 
