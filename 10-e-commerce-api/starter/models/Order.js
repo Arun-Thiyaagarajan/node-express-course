@@ -1,7 +1,7 @@
 import { model, Schema  } from "mongoose";
 
 
-const SingleCartItemSchema = Schema({
+const SingleOrderItemSchema = Schema({
     name: {
         type: String,
         required: true,
@@ -42,7 +42,7 @@ const OrderSchema = Schema({
         type: Number,
         required: true,
     },
-    orderItems: [SingleCartItemSchema],
+    orderItems: [SingleOrderItemSchema],
     status: {
         type: String,
         required: true,
@@ -58,9 +58,8 @@ const OrderSchema = Schema({
         type: String,
         required: true,
     },
-    paymentId: {
+    paymentIntentId: {
         type: String,
-        required: true,
     },
 }, { timestamps: true });
 
