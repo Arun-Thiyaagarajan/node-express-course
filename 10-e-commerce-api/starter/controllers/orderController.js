@@ -10,18 +10,6 @@ const fakeStripeAPI = async ({ amount, currency }) => {
     return { client_secret, amount };
 }
 
-const getAllOrders = async (req, res) => {
-    res.send('getAllOrders');
-}
-
-const getSingleOrder = async (req, res) => {
-    res.send('getSingleOrder');
-}
-
-const getCurrentUserOrder = async (req, res) => {
-    res.send('getCurrentUserOrder');
-}
-
 const createOrder = async (req, res) => {
     const { items: cartItems, tax, shippingFee } = req.body;
 
@@ -68,11 +56,45 @@ const createOrder = async (req, res) => {
         clientSecret: paymentIntent.client_secret,
     });
 
-    res.status(StatusCodes.CREATED).json({order, clientSecret: order.clientSecret});
+    res.status(StatusCodes.CREATED).json({ order, clientSecret: order.clientSecret });
+}
+
+const getAllOrders = async (req, res) => {
+    const orders = await Order.find({});
+
+    res.status(StatusCodes.OK).json({ orders, totalCount: orders.length });
+}
+
+const getSingleOrder = async (req, res) => {
+    const { id: orderId } = req.params;
+    const order = await Order.findOne({ _id: orderId });
+    if (!order) {
+        throw new NotFoundError('Order not found');
+    }
+    checkPermissions(req.user, order.user);
+    res.status(StatusCodes.OK).json({ order });
+}
+
+const getCurrentUserOrder = async (req, res) => {
+    const orders = await Order.find({ user: req.user.userId });
+
+    res.status(StatusCodes.OK).json({ orders, totalCount: orders.length });
 }
 
 const updateOrder = async (req, res) => {
-    res.send('updateOrder');
+    const { id: orderId } = req.params;
+    const { paymentIntentId } = req.body;
+    const order = await Order.findOne({ _id: orderId });
+    if (!order) {
+        throw new NotFoundError('Order not found');
+    }
+    checkPermissions(req.user, order.user);
+    
+    order.paymentIntentId = paymentIntentId;
+    order.status = 'paid';
+    await order.save();
+
+    res.status(StatusCodes.OK).json({ order });
 }
 
 export {
