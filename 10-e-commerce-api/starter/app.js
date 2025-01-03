@@ -12,6 +12,11 @@ import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 import reviewRouter from './routes/reviewRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
+import rateLimiter from "express-rate-limit";
+import helmet from "helmet";
+import xss from "xss-clean";
+import cors from "cors";
+import mongoSanitize from "express-mongo-sanitize";
 
 // .env Configuration
 config();
@@ -19,6 +24,16 @@ config();
 const app = express();
 
 // Other Middleware
+app.use('trust proxy', 1);
+app.use(rateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 60, // limit each IP to 60 requests per windowMs
+}));
+app.use(helmet());
+app.use(cors());
+app.use(xss());
+app.use(mongoSanitize());
+
 app.use(morgan('tiny'));
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(json());
