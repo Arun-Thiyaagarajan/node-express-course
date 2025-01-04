@@ -75,7 +75,7 @@ const login = async (req, res) => {
 
   if (existingToken) {
     const { isValid } = existingToken;
-    if (!isValid) { 
+    if (!isValid) {
       throw new UnauthenticatedError('Invalid Credentials');
     }
     existingToken.refreshToken = refreshToken;
@@ -98,10 +98,17 @@ const login = async (req, res) => {
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 const logout = async (req, res) => {
-  res.cookie('token', 'logout', {
+  await Token.findOneAndDelete({ user: req.user.userId });
+  
+  res.cookie('accessToken', 'logout', {
     httpOnly: true,
-    expires: new Date(Date.now() + 1000),
+    expires: new Date(Date.now()),
   });
+  res.cookie('refreshToken', 'logout', {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  });
+  
   res.status(StatusCodes.OK).json({ msg: 'user logged out!' });
 };
 
