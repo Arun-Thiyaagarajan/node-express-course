@@ -4,6 +4,7 @@ import checkPermissions from './checkPermissions.js';
 import sendEmail from './sendEmail.js';
 import sendVerificationEmail from './sendVerficationEmail.js';
 import sendResetPasswordEmail from './sendResetPasswordEmail.js';
+import createHash from './createHash.js';
 
 export {
   createJWT,
@@ -14,4 +15,5 @@ export {
   sendEmail,
   sendVerificationEmail,
   sendResetPasswordEmail,
+  createHash,
 };

@@ -1,7 +1,7 @@
 import User from '../models/User.js';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, UnauthenticatedError } from '../errors/index.js';
-import { attachCookiesToResponse, createTokenUser, sendResetPasswordEmail, sendVerificationEmail } from '../utils/index.js';
+import { attachCookiesToResponse, createHash, createTokenUser, sendResetPasswordEmail, sendVerificationEmail } from '../utils/index.js';
 import crypto from 'crypto';
 import Token from '../models/Token.js';
 
@@ -129,7 +129,7 @@ const forgotPassword = async (req, res) => {
     
     const fifteenMinutes = 1000 * 60 * 15;
     const passwordTokenExpiration = new Date(Date.now() + fifteenMinutes);
-    user.passwordToken = passwordToken;
+    user.passwordToken = createHash(passwordToken);
     user.passwordTokenExpiration = passwordTokenExpiration;
     await user.save();
   }
@@ -145,7 +145,7 @@ const resetPassword = async (req, res) => {
   const user = await User.findOne({ email });
   if (user) {
     const currentTime = new Date();
-    if (user.passwordToken === token && currentTime < user.passwordTokenExpiration) {
+    if (user.passwordToken === createHash(token) && currentTime < user.passwordTokenExpiration) {
       user.password = password;
       user.passwordTokenExpiration = '';
       user.passwordToken = '';
