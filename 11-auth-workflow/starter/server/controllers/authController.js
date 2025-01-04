@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, UnauthenticatedError } from '../errors/index.js';
 import { attachCookiesToResponse, createTokenUser } from '../utils/index.js';
 import crypto from 'crypto';
+import sendEmail from '../utils/sendEmail.js';
 
 const register = async (req, res) => {
   const { email, name, password } = req.body;
@@ -20,10 +21,10 @@ const register = async (req, res) => {
 
   const user = await User.create({ name, email, password, role, verificationToken });
 
-  // send verification token back only while testing in Postman!!
+  await sendEmail();
+
   res.status(StatusCodes.CREATED).json({
     msg: 'Success! Please check your email to verify account',
-    verificationToken: user.verificationToken,
   });
 };
 
