@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, UnauthenticatedError } from '../errors/index.js';
 import { attachCookiesToResponse, createTokenUser } from '../utils/index.js';
+import crypto from 'crypto';
 
 const register = async (req, res) => {
   const { email, name, password } = req.body;
@@ -15,7 +16,7 @@ const register = async (req, res) => {
   const isFirstAccount = (await User.countDocuments({})) === 0;
   const role = isFirstAccount ? 'admin' : 'user';
 
-  const verificationToken = 'fake token';
+  const verificationToken = crypto.randomBytes(40).toString('hex');
 
   const user = await User.create({ name, email, password, role, verificationToken });
 
