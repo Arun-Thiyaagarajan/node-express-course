@@ -40,6 +40,9 @@ const login = async (req, res) => {
   if (!isPasswordCorrect) {
     throw new UnauthenticatedError('Invalid Credentials');
   }
+  if (!user.isVerified) {
+    throw new UnauthenticatedError('Please verify your email');
+  }
   const tokenUser = createTokenUser(user);
   attachCookiesToResponse({ res, user: tokenUser });
 
