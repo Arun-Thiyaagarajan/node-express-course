@@ -3,6 +3,7 @@ import createTokenUser from './createTokenUser.js';
 import checkPermissions from './checkPermissions.js';
 import sendEmail from './sendEmail.js';
 import sendVerificationEmail from './sendVerficationEmail.js';
+import sendResetPasswordEmail from './sendResetPasswordEmail.js';
 
 export {
   createJWT,
@@ -12,4 +13,5 @@ export {
   checkPermissions,
   sendEmail,
   sendVerificationEmail,
+  sendResetPasswordEmail,
 };

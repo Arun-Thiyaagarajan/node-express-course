@@ -1,7 +1,7 @@
 import User from '../models/User.js';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, UnauthenticatedError } from '../errors/index.js';
-import { attachCookiesToResponse, createTokenUser, sendVerificationEmail } from '../utils/index.js';
+import { attachCookiesToResponse, createTokenUser, sendResetPasswordEmail, sendVerificationEmail } from '../utils/index.js';
 import crypto from 'crypto';
 import Token from '../models/Token.js';
 
@@ -97,9 +97,10 @@ const login = async (req, res) => {
 
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
+
 const logout = async (req, res) => {
   await Token.findOneAndDelete({ user: req.user.userId });
-  
+
   res.cookie('accessToken', 'logout', {
     httpOnly: true,
     expires: new Date(Date.now()),
@@ -108,13 +109,60 @@ const logout = async (req, res) => {
     httpOnly: true,
     expires: new Date(Date.now()),
   });
-  
+
   res.status(StatusCodes.OK).json({ msg: 'user logged out!' });
 };
+
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (user) {
+    const passwordToken = crypto.randomBytes(40).toString('hex');
+    //send email
+    await sendResetPasswordEmail({
+      name: user.name,
+      email: user.email,
+      passwordToken: passwordToken,
+      origin: 'http://localhost:3000',
+    });
+    
+    const fifteenMinutes = 1000 * 60 * 15;
+    const passwordTokenExpiration = new Date(Date.now() + fifteenMinutes);
+    user.passwordToken = passwordToken;
+    user.passwordTokenExpiration = passwordTokenExpiration;
+    await user.save();
+  }
+
+  res.status(StatusCodes.OK).json({ msg: 'Please check your email for the password reset link!' });
+}
+
+const resetPassword = async (req, res) => {
+  const { token, email, password } = req.body;
+  if (!token ||!email ||!password) {
+    throw new BadRequestError('Please provide all required values');
+  }
+  const user = await User.findOne({ email });
+  if (user) {
+    const currentTime = new Date();
+    if (user.passwordToken === token && currentTime < user.passwordTokenExpiration) {
+      user.password = password;
+      user.passwordTokenExpiration = '';
+      user.passwordToken = '';
+      await user.save();
+    } else {
+      throw new UnauthenticatedError('Reset Password Link Expired');
+    }
+  }
+
+  res.status(StatusCodes.OK).json({ msg: `Password reseted for the email: ${email} successfully!` });
+}
 
 export {
   register,
   login,
   logout,
   verifyEmail,
+  forgotPassword,
+  resetPassword,
 };

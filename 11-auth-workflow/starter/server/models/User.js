@@ -34,6 +34,8 @@ const UserSchema = new Schema({
     default: false,
   },
   verified: Date,
+  passwordToken: String,
+  passwordTokenExpiration: Date,
 });
 
 UserSchema.pre('save', async function () {
