@@ -78,7 +78,7 @@ const login = async (req, res) => {
     if (!isValid) {
       throw new UnauthenticatedError('Invalid Credentials');
     }
-    existingToken.refreshToken = refreshToken;
+    refreshToken = existingToken.refreshToken;
     await existingToken.save();
   } else {
     refreshToken = crypto.randomBytes(40).toString('hex');
