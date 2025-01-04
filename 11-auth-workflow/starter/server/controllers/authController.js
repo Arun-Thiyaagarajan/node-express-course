@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, UnauthenticatedError } from '../errors/index.js';
 import { attachCookiesToResponse, createTokenUser, sendVerificationEmail } from '../utils/index.js';
 import crypto from 'crypto';
+import Token from '../models/Token.js';
 
 const register = async (req, res) => {
   const { email, name, password } = req.body;
@@ -20,7 +21,7 @@ const register = async (req, res) => {
 
   const user = await User.create({ name, email, password, role, verificationToken });
   const origin = 'http://localhost:3000'
-  
+
   await sendVerificationEmail({
     name: user.name,
     email: user.email,
@@ -66,7 +67,33 @@ const login = async (req, res) => {
     throw new UnauthenticatedError('Please verify your email');
   }
   const tokenUser = createTokenUser(user);
-  attachCookiesToResponse({ res, user: tokenUser });
+
+  // create refresh token
+  let refreshToken = '';
+  // check for existing token
+  const existingToken = await Token.findOne({ user: user._id });
+
+  if (existingToken) {
+    const { isValid } = existingToken;
+    if (!isValid) { 
+      throw new UnauthenticatedError('Invalid Credentials');
+    }
+    existingToken.refreshToken = refreshToken;
+    await existingToken.save();
+  } else {
+    refreshToken = crypto.randomBytes(40).toString('hex');
+    const userAgent = req.headers['user-agent'];
+    const ip = req.ip;
+    const usertoken = {
+      refreshToken,
+      ip,
+      userAgent,
+      user: user._id,
+    };
+    await Token.create(usertoken);
+  }
+
+  attachCookiesToResponse({ res, user: tokenUser, refreshToken });
 
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
