@@ -76,7 +76,7 @@ ProductSchema.virtual('reviews', {
     // match: { rating: 5 }
 });
 
-ProductSchema.pre('remove', async function (next) {
+ProductSchema.pre('deleteOne', async function (next) {
     await this.model('Review').deleteMany({product: this._id});
 });
 

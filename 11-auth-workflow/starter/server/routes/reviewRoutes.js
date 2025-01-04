@@ -1,14 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const { authenticateUser } = require('../middleware/authentication');
+import { Router } from 'express';
+import { authenticateUser } from '../middleware/authentication.js';
+import { createReview, getAllReviews, getSingleReview, updateReview, deleteReview } from '../controllers/reviewController.js';
 
-const {
-  createReview,
-  getAllReviews,
-  getSingleReview,
-  updateReview,
-  deleteReview,
-} = require('../controllers/reviewController');
+const router = Router();
 
 router.route('/').post(authenticateUser, createReview).get(getAllReviews);
 
@@ -18,4 +12,4 @@ router
   .patch(authenticateUser, updateReview)
   .delete(authenticateUser, deleteReview);
 
-module.exports = router;
+export default router;

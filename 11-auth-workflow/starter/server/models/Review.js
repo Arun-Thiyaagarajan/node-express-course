@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const ReviewSchema = mongoose.Schema(
+const ReviewSchema = Schema(
   {
     rating: {
       type: Number,
@@ -19,12 +19,12 @@ const ReviewSchema = mongoose.Schema(
       required: [true, 'Please provide review text'],
     },
     user: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.ObjectId,
       ref: 'User',
       required: true,
     },
     product: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.ObjectId,
       ref: 'Product',
       required: true,
     },
@@ -62,8 +62,8 @@ ReviewSchema.post('save', async function () {
   await this.constructor.calculateAverageRating(this.product);
 });
 
-ReviewSchema.post('remove', async function () {
+ReviewSchema.post('deleteOne', { document: true, query: false }, async function () {
   await this.constructor.calculateAverageRating(this.product);
 });
 
-module.exports = mongoose.model('Review', ReviewSchema);
+export default model('Review', ReviewSchema);

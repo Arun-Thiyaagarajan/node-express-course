@@ -1,7 +1,7 @@
-const Product = require('../models/Product');
-const { StatusCodes } = require('http-status-codes');
-const CustomError = require('../errors');
-const path = require('path');
+import Product from '../models/Product.js';
+import { StatusCodes } from 'http-status-codes';
+import { NotFoundError, BadRequestError } from '../errors/index.js';
+import { join } from 'path';
 
 const createProduct = async (req, res) => {
   req.body.user = req.user.userId;
@@ -19,7 +19,7 @@ const getSingleProduct = async (req, res) => {
   const product = await Product.findOne({ _id: productId }).populate('reviews');
 
   if (!product) {
-    throw new CustomError.NotFoundError(`No product with id : ${productId}`);
+    throw new NotFoundError(`No product with id : ${productId}`);
   }
 
   res.status(StatusCodes.OK).json({ product });
@@ -33,7 +33,7 @@ const updateProduct = async (req, res) => {
   });
 
   if (!product) {
-    throw new CustomError.NotFoundError(`No product with id : ${productId}`);
+    throw new NotFoundError(`No product with id : ${productId}`);
   }
 
   res.status(StatusCodes.OK).json({ product });
@@ -44,31 +44,31 @@ const deleteProduct = async (req, res) => {
   const product = await Product.findOne({ _id: productId });
 
   if (!product) {
-    throw new CustomError.NotFoundError(`No product with id : ${productId}`);
+    throw new NotFoundError(`No product with id : ${productId}`);
   }
 
-  await product.remove();
+  await product.deleteOne();
   res.status(StatusCodes.OK).json({ msg: 'Success! Product removed.' });
 };
 const uploadImage = async (req, res) => {
   if (!req.files) {
-    throw new CustomError.BadRequestError('No File Uploaded');
+    throw new BadRequestError('No File Uploaded');
   }
   const productImage = req.files.image;
 
   if (!productImage.mimetype.startsWith('image')) {
-    throw new CustomError.BadRequestError('Please Upload Image');
+    throw new BadRequestError('Please Upload Image');
   }
 
   const maxSize = 1024 * 1024;
 
   if (productImage.size > maxSize) {
-    throw new CustomError.BadRequestError(
+    throw new BadRequestError(
       'Please upload image smaller than 1MB'
     );
   }
 
-  const imagePath = path.join(
+  const imagePath = join(
     __dirname,
     '../public/uploads/' + `${productImage.name}`
   );
@@ -76,7 +76,7 @@ const uploadImage = async (req, res) => {
   res.status(StatusCodes.OK).json({ image: `/uploads/${productImage.name}` });
 };
 
-module.exports = {
+export {
   createProduct,
   getAllProducts,
   getSingleProduct,

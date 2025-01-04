@@ -1,9 +1,7 @@
-const Order = require('../models/Order');
-const Product = require('../models/Product');
-
-const { StatusCodes } = require('http-status-codes');
-const CustomError = require('../errors');
-const { checkPermissions } = require('../utils');
+import Order from '../models/Order.js';
+import { StatusCodes } from 'http-status-codes';
+import { BadRequestError, NotFoundError } from '../errors/index.js';
+import { checkPermissions } from '../utils/index.js';
 
 const fakeStripeAPI = async ({ amount, currency }) => {
   const client_secret = 'someRandomValue';
@@ -14,10 +12,10 @@ const createOrder = async (req, res) => {
   const { items: cartItems, tax, shippingFee } = req.body;
 
   if (!cartItems || cartItems.length < 1) {
-    throw new CustomError.BadRequestError('No cart items provided');
+    throw new BadRequestError('No cart items provided');
   }
   if (!tax || !shippingFee) {
-    throw new CustomError.BadRequestError(
+    throw new BadRequestError(
       'Please provide tax and shipping fee'
     );
   }
@@ -26,9 +24,9 @@ const createOrder = async (req, res) => {
   let subtotal = 0;
 
   for (const item of cartItems) {
-    const dbProduct = await Product.findOne({ _id: item.product });
+    const dbProduct = await Order.findOne({ _id: item.product });
     if (!dbProduct) {
-      throw new CustomError.NotFoundError(
+      throw new NotFoundError(
         `No product with id : ${item.product}`
       );
     }
@@ -75,7 +73,7 @@ const getSingleOrder = async (req, res) => {
   const { id: orderId } = req.params;
   const order = await Order.findOne({ _id: orderId });
   if (!order) {
-    throw new CustomError.NotFoundError(`No order with id : ${orderId}`);
+    throw new NotFoundError(`No order with id : ${orderId}`);
   }
   checkPermissions(req.user, order.user);
   res.status(StatusCodes.OK).json({ order });
@@ -90,7 +88,7 @@ const updateOrder = async (req, res) => {
 
   const order = await Order.findOne({ _id: orderId });
   if (!order) {
-    throw new CustomError.NotFoundError(`No order with id : ${orderId}`);
+    throw new NotFoundError(`No order with id : ${orderId}`);
   }
   checkPermissions(req.user, order.user);
 
@@ -101,7 +99,7 @@ const updateOrder = async (req, res) => {
   res.status(StatusCodes.OK).json({ order });
 };
 
-module.exports = {
+export {
   getAllOrders,
   getSingleOrder,
   getCurrentUserOrders,

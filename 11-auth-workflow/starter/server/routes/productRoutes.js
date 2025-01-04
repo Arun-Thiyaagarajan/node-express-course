@@ -1,20 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const {
-  authenticateUser,
-  authorizePermissions,
-} = require('../middleware/authentication');
+import { Router } from 'express';
+import { authenticateUser, authorizePermissions } from '../middleware/authentication.js';
+import { createProduct, getAllProducts, getSingleProduct, updateProduct, deleteProduct, uploadImage } from '../controllers/productController.js';
+import { getSingleProductReviews } from '../controllers/reviewController.js';
 
-const {
-  createProduct,
-  getAllProducts,
-  getSingleProduct,
-  updateProduct,
-  deleteProduct,
-  uploadImage,
-} = require('../controllers/productController');
-
-const { getSingleProductReviews } = require('../controllers/reviewController');
+const router = Router();
 
 router
   .route('/')
@@ -33,4 +22,4 @@ router
 
 router.route('/:id/reviews').get(getSingleProductReviews);
 
-module.exports = router;
+export default router;
